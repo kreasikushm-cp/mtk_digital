@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MATH ADVENTURE DIGITAL — Petualangan Matematika SMP</title>
+  <style>
+    :root {
+      --primary-blue: #1e88e5;
+      --dark-blue: #1565c0;
+      --accent-purple: #8e24aa;
+      --accent-green: #43a047;
+      --light-bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-dark: #212121;
+      --text-muted: #616161;
+      --border-color: #e0e0e0;
+      --correct-green: #2e7d32;
+      --wrong-red: #c62828;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--light-bg); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; }
+
+    header { background: linear-gradient(135deg, var(--dark-blue), var(--accent-purple)); color: white; padding: 15px 20px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; }
+    header h1 { font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    header p { font-size: 0.95rem; font-style: italic; margin-top: 4px; color: #e1bee7; }
+    .school-tag { position: absolute; left: 20px; top: 15px; font-weight: bold; background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px; font-size: 0.85rem; }
+
+    .container { max-width: 1050px; width: 100%; margin: 20px auto; padding: 20px; flex: 1; }
+    .card { background: var(--card-bg); border-radius: 12px; padding: 25px; box-shadow: 0 8px 16px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .hidden { display: none !important; }
+
+    .btn { display: inline-block; background-color: var(--primary-blue); color: white; border: none; padding: 10px 20px; border-radius: 6px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: all 0.2s; text-align: center; text-decoration: none; margin: 4px; }
+    .btn:hover { background-color: var(--dark-blue); transform: translateY(-1px); }
+    .btn-purple { background-color: var(--accent-purple); }
+    .btn-purple:hover { background-color: #6a1b9a; }
+    .btn-green { background-color: var(--accent-green); }
+    .btn-green:hover { background-color: #2e7d32; }
+    .btn-red { background-color: var(--wrong-red); }
+    .btn-red:hover { background-color: #8e0000; }
+    .btn-large { font-size: 1.1rem; padding: 14px 28px; width: 100%; max-width: 320px; }
+
+    .nav-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; justify-content: center; background: #e3f2fd; padding: 10px; border-radius: 8px; }
+    .tab-btn { padding: 8px 16px; background: #fff; border: 1px solid var(--primary-blue); border-radius: 20px; font-size: 0.9rem; font-weight: bold; color: var(--primary-blue); cursor: pointer; }
+    .tab-btn.active { background: var(--primary-blue); color: #fff; }
+
+    .form-group { margin-bottom: 15px; text-align: left; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9rem; }
+    .form-control { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.95rem; }
+
+    .slider-box { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+    .slider-box label { min-width: 120px; font-weight: bold; }
+    .slider-box input[type=range] { flex: 1; }
+
+    .svg-canvas { width: 100%; height: 260px; background: #fafafa; border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 15px 0; }
+
+    .formula-badge { display: inline-block; background: #f3e5f5; color: var(--accent-purple); border: 1px solid var(--accent-purple); padding: 6px 12px; border-radius: 6px; font-family: 'Courier New', Courier, monospace; font-weight: bold; margin: 5px 0; }
+
+    .quiz-option { display: block; width: 100%; padding: 12px; margin: 8px 0; background: #f8f9fa; border: 2px solid #e0e0e0; border-radius: 8px; text-align: left; font-size: 1rem; cursor: pointer; transition: 0.2s; }
+    .quiz-option:hover { background: #e3f2fd; border-color: var(--primary-blue); }
+    .quiz-option.correct { background-color: #c8e6c9 !important; border-color: var(--correct-green) !important; color: #1b5e20; }
+    .quiz-option.wrong { background-color: #ffcdd2 !important; border-color: var(--wrong-red) !important; color: #b71c1c; }
+
+    .step-box { background: #f1f8e9; border-left: 4px solid var(--accent-green); padding: 12px; border-radius: 4px; margin: 10px 0; text-align: left; }
+
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9rem; }
+    th, td { border: 1px solid var(--border-color); padding: 8px 12px; text-align: center; }
+    th { background-color: #f0f4f8; color: var(--dark-blue); font-weight: bold; }
+
+    @media print {
+      header, .nav-tabs, .no-print { display: none !important; }
+      .container { max-width: 100%; margin: 0; padding: 0; }
+      .card { box-shadow: none; border: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="school-tag" id="school-tag">SMP NEGERI MATEMATIKA DIGITAL</div>
+    <h1>MATH ADVENTURE DIGITAL</h1>
+    <p>“Amati, Eksplorasi, Temukan Pola, dan Pecahkan Tantangan!”</p>
+  </header>
+
+  <div class="container">
+
+    <!-- BERANDA / REGISTRASI -->
+    <div id="page-landing" class="card text-center">
+      <h2>Petualangan Matematika Interaktif</h2>
+      <p style="color: var(--text-muted); margin: 10px 0 20px;">Eksplorasi sifat-sifat geometri, uji dugaanmu, dan kuasai kuis matematika berjenjang!</p>
+
+      <div style="max-width: 420px; margin: 0 auto; text-align: left;">
+        <div class="form-group">
+          <label for="player-name">Nama Pemain / Kelompok:</label>
+          <input type="text" id="player-name" class="form-control" value="Petualang Matematika">
+        </div>
+        <div class="form-group">
+          <label for="player-class">Tingkat Kelas:</label>
+          <select id="player-class" class="form-control">
+            <option value="VII">Kelas VII (Tujuh)</option>
+            <option value="VIII">Kelas VIII (Delapan)</option>
+            <option value="IX">Kelas IX (Sembilan)</option>
+          </select>
+        </div>
+        <button class="btn btn-purple btn-large" style="margin-top: 10px;" onclick="startAdventure()">MULAI PETUALANGAN</button>
+      </div>
+
+      <div style="margin-top: 25px;" class="no-print">
+        <button class="btn btn-green" onclick="showPage('page-teacher')">Panel Guru & Evaluasi</button>
+      </div>
+    </div>
+
+    <!-- MAIN DASHBOARD UTAMA -->
+    <div id="page-main" class="card hidden">
+      <div class="nav-tabs no-print">
+        <button class="tab-btn active" id="tab-1" onclick="switchTab('datar')">📐 Bangun Datar</button>
+        <button class="tab-btn" id="tab-2" onclick="switchTab('ruang')">🧊 Bangun Ruang</button>
+        <button class="tab-btn" id="tab-3" onclick="switchTab('kuis')">🏆 Kuis Berjenjang</button>
+        <button class="tab-btn" id="tab-4" onclick="switchTab('lembar')">📝 Lembar Pengamatan</button>
+      </div>
+
+      <!-- SECTION 1: EKSPLORASI BANGUN DATAR -->
+      <div id="sec-datar">
+        <h3>Eksplorasi Laboratorium Bangun Datar</h3>
+        <p style="color: var(--text-muted); margin-bottom: 15px;">Pilih bangun datar, geser nilainya, dan amati perubahan luas serta keliling secara otomatis.</p>
+
+        <div style="margin-bottom: 15px;">
+          <label><strong>Pilih Bangun Datar:</strong></label>
+          <select id="select-shape-2d" class="form-control" style="max-width: 300px; display: inline-block; margin-left: 10px;" onchange="update2DShape()">
+            <option value="persegi">Persegi</option>
+            <option value="persegi_panjang">Persegi Panjang</option>
+            <option value="segitiga">Segitiga</option>
+            <option value="lingkaran">Lingkaran</option>
+          </select>
+        </div>
+
+        <div class="svg-canvas">
+          <svg id="svg-2d" width="300" height="220" viewBox="0 0 300 220"></svg>
+        </div>
+
+        <div id="sliders-2d"></div>
+
+        <div style="text-align: left; background: #f3e5f5; padding: 15px; border-radius: 8px; margin-top: 15px;">
+          <p><strong>Formula Rumus:</strong> <span id="formula-2d" class="formula-badge">-</span></p>
+          <p><strong>Luas (L):</strong> <span id="calc-area-2d" style="font-weight: bold; color: var(--accent-purple);">0</span> cm²</p>
+          <p><strong>Keliling (K):</strong> <span id="calc-peri-2d" style="font-weight: bold; color: var(--primary-blue);">0</span> cm</p>
+        </div>
+
+        <!-- UJI DUGAAN -->
+        <div style="margin-top: 20px; text-align: left; background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--accent-green);">
+          <h4>🧠 Uji Dugaan Matematika:</h4>
+          <p id="hypothesis-q">Apa yang terjadi pada LUAS Persegi jika panjang sisinya kita kalikan dua (2x)?</p>
+          <div style="margin: 10px 0;">
+            <input type="radio" name="hypo" id="h1" value="2x"> <label for="h1">Luas menjadi 2x lipat</label><br>
+            <input type="radio" name="hypo" id="h2" value="4x"> <label for="h2">Luas menjadi 4x lipat</label><br>
+            <input type="radio" name="hypo" id="h3" value="tetap"> <label for="h3">Luas tetap sama</label>
+          </div>
+          <button class="btn btn-green" onclick="checkHypothesis()">Periksa Dugaan Saya</button>
+          <p id="hypo-feedback" style="margin-top: 8px; font-weight: bold;"></p>
+        </div>
+      </div>
+
+      <!-- SECTION 2: EKSPLORASI BANGUN RUANG -->
+      <div id="sec-ruang" class="hidden">
+        <h3>Eksplorasi Laboratorium Bangun Ruang</h3>
+        <p style="color: var(--text-muted); margin-bottom: 15px;">Amati visualisasi model 3D sederhana dan perhitungan Volume serta Luas Permukaan.</p>
+
+        <div style="margin-bottom: 15px;">
+          <label><strong>Pilih Bangun Ruang:</strong></label>
+          <select id="select-shape-3d" class="form-control" style="max-width: 300px; display: inline-block; margin-left: 10px;" onchange="update3DShape()">
+            <option value="kubus">Kubus</option>
+            <option value="balok">Balok</option>
+            <option value="tabung">Tabung</option>
+          </select>
+        </div>
+
+        <div class="svg-canvas">
+          <svg id="svg-3d" width="300" height="220" viewBox="0 0 300 220"></svg>
+        </div>
+
+        <div id="sliders-3d"></div>
+
+        <div style="text-align: left; background: #e3f2fd; padding: 15px; border-radius: 8px; margin-top: 15px;">
+          <p><strong>Formula Volume:</strong> <span id="formula-3d-v" class="formula-badge">-</span></p>
+          <p><strong>Formula Luas Permukaan:</strong> <span id="formula-3d-lp" class="formula-badge">-</span></p>
+          <p><strong>Volume (V):</strong> <span id="calc-vol-3d" style="font-weight: bold; color: var(--primary-blue);">0</span> cm³</p>
+          <p><strong>Luas Permukaan (LP):</strong> <span id="calc-lp-3d" style="font-weight: bold; color: var(--accent-purple);">0</span> cm²</p>
+        </div>
+      </div>
+
+      <!-- SECTION 3: KUIS MATEMATIKA BERJENJANG -->
+      <div id="sec-kuis" class="hidden">
+        <h3>Kuis Matematika Berjenjang</h3>
+        <p style="color: var(--text-muted); margin-bottom: 15px;">Uji pemahamanmu dari tingkat Pemula, Penjelajah, hingga Master Matematika!</p>
+
+        <div style="margin-bottom: 15px; text-align: center;">
+          <button class="btn btn-green" onclick="startQuizLevel(1)">Level 1: Pemula</button>
+          <button class="btn" onclick="startQuizLevel(2)">Level 2: Penjelajah</button>
+          <button class="btn btn-purple" onclick="startQuizLevel(3)">Level 3: Master</button>
+        </div>
+
+        <div id="quiz-box" style="text-align: left; margin-top: 15px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 8px;">
+            <span id="quiz-level-tag" style="font-weight: bold; color: var(--accent-purple);">Pilih Level Kuis</span>
+            <span>Skor Kuis: <strong id="quiz-score">0</strong></span>
+          </div>
+          
+          <div id="quiz-content" style="margin-top: 15px;">
+            <p style="color: var(--text-muted);">Klik salah satu tombol level kuis di atas untuk memulai soal.</p>
+          </div>
+
+          <div id="quiz-feedback" class="hidden" style="margin-top: 15px;"></div>
+
+          <div style="margin-top: 15px; text-align: right;">
+            <button id="btn-next-quiz" class="btn btn-purple hidden" onclick="nextQuizQuestion()">Soal Berikutnya &raquo;</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION 4: LEMBAR HASIL PENGAMATAN -->
+      <div id="sec-lembar" class="hidden">
+        <h3>Lembar Hasil Pengamatan Digital</h3>
+        <p style="color: var(--text-muted); margin-bottom: 15px;">Dokumentasikan penemuan rumus dan kesimpulan hasil eksplorasimu.</p>
+
+        <div style="text-align: left; max-width: 800px; margin: 0 auto;">
+          <div class="form-group">
+            <label>Bangun yang Diamati:</label>
+            <input type="text" id="obs-shape" class="form-control" placeholder="Misal: Persegi & Kubus">
+          </div>
+          <div class="form-group">
+            <label>Pola Hubungan yang Ditemukan:</label>
+            <textarea id="obs-pattern" class="form-control" rows="3" placeholder="Misal: Ketika sisi persegi dikali 2, luasnya menjadi 4 kali lipat dari semula..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Refleksi Pembelajaran:</label>
+            <textarea id="obs-reflection" class="form-control" rows="2" placeholder="Apa bagian yang paling menarik dari eksplorasi geometri hari ini?"></textarea>
+          </div>
+
+          <button class="btn btn-green" onclick="saveObservation()">Simpan Lembar Pengamatan</button>
+        </div>
+
+        <div id="saved-obs-list" style="margin-top: 20px; text-align: left;"></div>
+
+        <div class="no-print" style="margin-top: 20px;">
+          <button class="btn btn-purple" onclick="window.print()">🖨️ Cetak Lembar Pengamatan</button>
+          <button class="btn btn-green" onclick="exportCSV()">📁 Ekspor ke CSV</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HALAMAN GURU -->
+    <div id="page-teacher" class="card hidden">
+      <h3>Panel Guru & Evaluasi Klasikal</h3>
+      <p style="color: var(--text-muted); margin-bottom: 20px;">Pengaturan tayangan proyektor/IFP dan rekap skor eksplorasi siswa.</p>
+
+      <div class="form-group" style="max-width: 400px; margin: 0 auto 20px;">
+        <label>Ubah Nama Sekolah:</label>
+        <input type="text" id="cfg-school" class="form-control" value="SMP NEGERI MATEMATIKA DIGITAL">
+        <button class="btn btn-green" style="margin-top: 10px;" onclick="saveSchoolName()">Simpan Nama Sekolah</button>
+      </div>
+
+      <h4 style="margin-top: 20px; text-align: left;">Rubrik Evaluasi Penalaran Matematika</h4>
+      <table style="text-align: left;">
+        <tr><th>Kriteria</th><th>Bobot</th><th>Indikator Capaian</th></tr>
+        <tr><td>Eksplorasi Geometri</td><td>30%</td><td>Mengoperasikan slider dan mengamati pola perubahan luas/volume.</td></tr>
+        <tr><td>Uji Dugaan (Hipotesis)</td><td>30%</td><td>Mampu menganalisis hubungan kelipatan dimensi terhadap luas/volume.</td></tr>
+        <tr><td>Kuis Berjenjang</td><td>40%</td><td>Menyelesaikan soal komputasi dan pemecahan masalah konteks.</td></tr>
+      </table>
+
+      <div style="margin-top: 20px;" class="no-print">
+        <button class="btn" onclick="showPage('page-landing')">Kembali ke Beranda</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // --- STATE APLIKASI ---
+    let appState = {
+      playerName: "Petualang Matematika",
+      playerClass: "VII",
+      observations: [],
+      quizLevel: 1,
+      quizIndex: 0,
+      quizScore: 0
+    };
+
+    // --- BANK SOAL KUIS BERJENJANG ---
+    const quizBank = {
+      1: [ // Level 1: Pemula
+        {
+          q: "Sebuah persegi memiliki panjang sisi 6 cm. Berapakah luas persegi tersebut?",
+          opts: ["24 cm²", "36 cm²", "12 cm²", "18 cm²"],
+          ans: 1,
+          steps: [
+            "Diketahui: Sisi (s) = 6 cm",
+            "Rumus Luas Persegi: L = s × s",
+            "Perhitungan: L = 6 cm × 6 cm = 36 cm²"
+          ]
+        },
+        {
+          q: "Berapakah keliling lingkaran yang memiliki diameter 14 cm? (Gunakan π = 22/7)",
+          opts: ["44 cm", "88 cm", "154 cm", "28 cm"],
+          ans: 0,
+          steps: [
+            "Diketahui: Diameter (d) = 14 cm",
+            "Rumus Keliling Lingkaran: K = π × d",
+            "Perhitungan: K = (22/7) × 14 = 44 cm"
+          ]
+        }
+      ],
+      2: [ // Level 2: Penjelajah
+        {
+          q: "Jika panjang rusuk sebuah kubus diperbesar menjadi 2 kali lipat dari semula (misal dari 3 cm menjadi 6 cm), berapa kali lipatkan VOLUMENYA meningkat?",
+          opts: ["2 kali lipat", "4 kali lipat", "8 kali lipat", "16 kali lipat"],
+          ans: 2,
+          steps: [
+            "Volume awal (s1 = 3 cm): V1 = 3³ = 27 cm³",
+            "Volume baru (s2 = 6 cm): V2 = 6³ = 216 cm³",
+            "Rasio Volume: 216 / 27 = 8 kali lipat (Sesuai rumus 2³ = 8)"
+          ]
+        }
+      ],
+      3: [ // Level 3: Master
+        {
+          q: "Sebuah balok memiliki panjang 10 cm, lebar 6 cm, dan tinggi 4 cm. Jika tinggi balok ditambah 2 cm, berapakah pertambahan volume balok tersebut?",
+          opts: ["120 cm³", "240 cm³", "360 cm³", "60 cm³"],
+          ans: 0,
+          steps: [
+            "Volume Awal: V1 = 10 × 6 × 4 = 240 cm³",
+            "Tinggi Baru: t2 = 4 + 2 = 6 cm",
+            "Volume Baru: V2 = 10 × 6 × 6 = 360 cm³",
+            "Pertambahan Volume: 360 - 240 = 120 cm³"
+          ]
+        }
+      ]
+    };
+
+    function showPage(pageId) {
+      document.querySelectorAll('.container > div').forEach(d => d.classList.add('hidden'));
+      document.getElementById(pageId).classList.remove('hidden');
+    }
+
+    function startAdventure() {
+      appState.playerName = document.getElementById('player-name').value || "Petualang";
+      appState.playerClass = document.getElementById('player-class').value;
+      showPage('page-main');
+      update2DShape();
+      update3DShape();
+    }
+
+    function switchTab(tabKey) {
+      document.querySelectorAll('.nav-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('sec-datar').classList.add('hidden');
+      document.getElementById('sec-ruang').classList.add('hidden');
+      document.getElementById('sec-kuis').classList.add('hidden');
+      document.getElementById('sec-lembar').classList.add('hidden');
+
+      if(tabKey === 'datar') {
+        document.getElementById('sec-datar').classList.remove('hidden');
+        document.getElementById('tab-1').classList.add('active');
+      } else if(tabKey === 'ruang') {
+        document.getElementById('sec-ruang').classList.remove('hidden');
+        document.getElementById('tab-2').classList.add('active');
+      } else if(tabKey === 'kuis') {
+        document.getElementById('sec-kuis').classList.remove('hidden');
+        document.getElementById('tab-3').classList.add('active');
+      } else if(tabKey === 'lembar') {
+        document.getElementById('sec-lembar').classList.remove('hidden');
+        document.getElementById('tab-4').classList.add('active');
+      }
+    }
+
+    // --- GEOMETRI 2D ---
+    function update2DShape() {
+      const type = document.getElementById('select-shape-2d').value;
+      const sliderBox = document.getElementById('sliders-2d');
+      const svg = document.getElementById('svg-2d');
+      svg.innerHTML = "";
+
+      if(type === 'persegi') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Sisi (s): <span id="v-s">6</span> cm</label>
+            <input type="range" id="inp-s" min="1" max="15" value="6" oninput="calc2D()">
+          </div>
+        `;
+        document.getElementById('formula-2d').innerText = "L = s × s  |  K = 4 × s";
+      } else if(type === 'persegi_panjang') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Panjang (p): <span id="v-p">8</span> cm</label>
+            <input type="range" id="inp-p" min="1" max="15" value="8" oninput="calc2D()">
+          </div>
+          <div class="slider-box">
+            <label>Lebar (l): <span id="v-l">5</span> cm</label>
+            <input type="range" id="inp-l" min="1" max="15" value="5" oninput="calc2D()">
+          </div>
+        `;
+        document.getElementById('formula-2d').innerText = "L = p × l  |  K = 2 × (p + l)";
+      } else if(type === 'segitiga') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Alas (a): <span id="v-a">8</span> cm</label>
+            <input type="range" id="inp-a" min="1" max="15" value="8" oninput="calc2D()">
+          </div>
+          <div class="slider-box">
+            <label>Tinggi (t): <span id="v-t">6</span> cm</label>
+            <input type="range" id="inp-t" min="1" max="15" value="6" oninput="calc2D()">
+          </div>
+        `;
+        document.getElementById('formula-2d').innerText = "L = ½ × a × t";
+      } else if(type === 'lingkaran') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Jari-jari (r): <span id="v-r">7</span> cm</label>
+            <input type="range" id="inp-r" min="1" max="14" value="7" oninput="calc2D()">
+          </div>
+        `;
+        document.getElementById('formula-2d').innerText = "L = π × r²  |  K = 2 × π × r";
+      }
+      calc2D();
+    }
+
+    function calc2D() {
+      const type = document.getElementById('select-shape-2d').value;
+      const svg = document.getElementById('svg-2d');
+      let area = 0, peri = 0;
+
+      if(type === 'persegi') {
+        const s = parseInt(document.getElementById('inp-s').value);
+        document.getElementById('v-s').innerText = s;
+        area = s * s;
+        peri = 4 * s;
+
+        const size = s * 10;
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", 150 - size/2);
+        rect.setAttribute("y", 110 - size/2);
+        rect.setAttribute("width", size);
+        rect.setAttribute("height", size);
+        rect.setAttribute("fill", "#e1bee7");
+        rect.setAttribute("stroke", "#8e24aa");
+        rect.setAttribute("stroke-width", "3");
+        svg.appendChild(rect);
+
+      } else if(type === 'persegi_panjang') {
+        const p = parseInt(document.getElementById('inp-p').value);
+        const l = parseInt(document.getElementById('inp-l').value);
+        document.getElementById('v-p').innerText = p;
+        document.getElementById('v-l').innerText = l;
+        area = p * l;
+        peri = 2 * (p + l);
+
+        const w = p * 12, h = l * 10;
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", 150 - w/2);
+        rect.setAttribute("y", 110 - h/2);
+        rect.setAttribute("width", w);
+        rect.setAttribute("height", h);
+        rect.setAttribute("fill", "#bbdefb");
+        rect.setAttribute("stroke", "#1e88e5");
+        rect.setAttribute("stroke-width", "3");
+        svg.appendChild(rect);
+
+      } else if(type === 'segitiga') {
+        const a = parseInt(document.getElementById('inp-a').value);
+        const t = parseInt(document.getElementById('inp-t').value);
+        document.getElementById('v-a').innerText = a;
+        document.getElementById('v-t').innerText = t;
+        area = 0.5 * a * t;
+        peri = a + (2 * Math.sqrt((a/2)*(a/2) + t*t)); // Approx isosceles
+
+        const w = a * 12, h = t * 10;
+        const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        poly.setAttribute("points", `${150 - w/2},${110 + h/2} ${150 + w/2},${110 + h/2} 150,${110 - h/2}`);
+        poly.setAttribute("fill", "#c8e6c9");
+        poly.setAttribute("stroke", "#43a047");
+        poly.setAttribute("stroke-width", "3");
+        svg.appendChild(poly);
+
+      } else if(type === 'lingkaran') {
+        const r = parseInt(document.getElementById('inp-r').value);
+        document.getElementById('v-r').innerText = r;
+        area = (Math.PI * r * r).toFixed(1);
+        peri = (2 * Math.PI * r).toFixed(1);
+
+        const rad = r * 7;
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", 150);
+        circle.setAttribute("cy", 110);
+        circle.setAttribute("r", rad);
+        circle.setAttribute("fill", "#ffe0b2");
+        circle.setAttribute("stroke", "#f57c00");
+        circle.setAttribute("stroke-width", "3");
+        svg.appendChild(circle);
+      }
+
+      document.getElementById('calc-area-2d').innerText = area;
+      document.getElementById('calc-peri-2d').innerText = typeof peri === 'number' ? peri.toFixed(1) : peri;
+    }
+
+    function checkHypothesis() {
+      const selected = document.querySelector('input[name="hypo"]:checked');
+      const feedback = document.getElementById('hypo-feedback');
+      if(!selected) {
+        feedback.innerText = "⚠️ Pilih salah satu opsi jawaban dugaan terlebih dahulu!";
+        feedback.style.color = "red";
+        return;
+      }
+
+      if(selected.value === '4x') {
+        feedback.innerHTML = "🎉 BENAR SEKALI! Jika sisi dikali 2, Luas menjadi (2s)² = 4 × s² (4 kali lipat dari semula).";
+        feedback.style.color = "var(--correct-green)";
+      } else {
+        feedback.innerHTML = "❌ KURANG TEPAT. Coba geser slider sisi dari 3 cm (L=9) ke 6 cm (L=36). Bandingkan 36 dengan 9!";
+        feedback.style.color = "var(--wrong-red)";
+      }
+    }
+
+    // --- GEOMETRI 3D ---
+    function update3DShape() {
+      const type = document.getElementById('select-shape-3d').value;
+      const sliderBox = document.getElementById('sliders-3d');
+      const svg = document.getElementById('svg-3d');
+      svg.innerHTML = "";
+
+      if(type === 'kubus') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Rusuk (s): <span id="v-s3">4</span> cm</label>
+            <input type="range" id="inp-s3" min="1" max="10" value="4" oninput="calc3D()">
+          </div>
+        `;
+        document.getElementById('formula-3d-v').innerText = "V = s³";
+        document.getElementById('formula-3d-lp').innerText = "LP = 6 × s²";
+      } else if(type === 'balok') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Panjang (p): <span id="v-p3">6</span> cm</label>
+            <input type="range" id="inp-p3" min="1" max="10" value="6" oninput="calc3D()">
+          </div>
+          <div class="slider-box">
+            <label>Lebar (l): <span id="v-l3">4</span> cm</label>
+            <input type="range" id="inp-l3" min="1" max="10" value="4" oninput="calc3D()">
+          </div>
+          <div class="slider-box">
+            <label>Tinggi (t): <span id="v-t3">5</span> cm</label>
+            <input type="range" id="inp-t3" min="1" max="10" value="5" oninput="calc3D()">
+          </div>
+        `;
+        document.getElementById('formula-3d-v').innerText = "V = p × l × t";
+        document.getElementById('formula-3d-lp').innerText = "LP = 2 × (pl + pt + lt)";
+      } else if(type === 'tabung') {
+        sliderBox.innerHTML = `
+          <div class="slider-box">
+            <label>Jari-jari (r): <span id="v-r3">3</span> cm</label>
+            <input type="range" id="inp-r3" min="1" max="8" value="3" oninput="calc3D()">
+          </div>
+          <div class="slider-box">
+            <label>Tinggi (t): <span id="v-tt3">6</span> cm</label>
+            <input type="range" id="inp-tt3" min="1" max="10" value="6" oninput="calc3D()">
+          </div>
+        `;
+        document.getElementById('formula-3d-v').innerText = "V = π × r² × t";
+        document.getElementById('formula-3d-lp').innerText = "LP = 2πr(r + t)";
+      }
+      calc3D();
+    }
+
+    function calc3D() {
+      const type = document.getElementById('select-shape-3d').value;
+      const svg = document.getElementById('svg-3d');
+      svg.innerHTML = "";
+      let vol = 0, lp = 0;
+
+      if(type === 'kubus') {
+        const s = parseInt(document.getElementById('inp-s3').value);
+        document.getElementById('v-s3').innerText = s;
+        vol = Math.pow(s, 3);
+        lp = 6 * Math.pow(s, 2);
+
+        // Simple Isometric Wireframe
+        drawIsoBox(svg, s*10, s*10, s*10);
+
+      } else if(type === 'balok') {
+        const p = parseInt(document.getElementById('inp-p3').value);
+        const l = parseInt(document.getElementById('inp-l3').value);
+        const t = parseInt(document.getElementById('inp-t3').value);
+        document.getElementById('v-p3').innerText = p;
+        document.getElementById('v-l3').innerText = l;
+        document.getElementById('v-t3').innerText = t;
+        vol = p * l * t;
+        lp = 2 * (p*l + p*t + l*t);
+
+        drawIsoBox(svg, p*10, l*10, t*10);
+
+      } else if(type === 'tabung') {
+        const r = parseInt(document.getElementById('inp-r3').value);
+        const t = parseInt(document.getElementById('inp-tt3').value);
+        document.getElementById('v-r3').innerText = r;
+        document.getElementById('v-tt3').innerText = t;
+        vol = (Math.PI * r * r * t).toFixed(1);
+        lp = (2 * Math.PI * r * (r + t)).toFixed(1);
+
+        // SVG Cylinder
+        const rx = r * 8, ry = r * 3, h = t * 10;
+        const cx = 150, cy = 150;
+        
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M ${cx-rx} ${cy-h/2} A ${rx} ${ry} 0 0 0 ${cx+rx} ${cy-h/2} L ${cx+rx} ${cy+h/2} A ${rx} ${ry} 0 0 1 ${cx-rx} ${cy+h/2} Z`);
+        path.setAttribute("fill", "#e1bee7");
+        path.setAttribute("stroke", "#8e24aa");
+        svg.appendChild(path);
+      }
+
+      document.getElementById('calc-vol-3d').innerText = vol;
+      document.getElementById('calc-lp-3d').innerText = lp;
+    }
+
+    function drawIsoBox(svg, w, d, h) {
+      const cx = 150, cy = 120;
+      // Front face
+      const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      rect.setAttribute("x", cx - w/2);
+      rect.setAttribute("y", cy - h/2);
+      rect.setAttribute("width", w);
+      rect.setAttribute("height", h);
+      rect.setAttribute("fill", "#bbdefb");
+      rect.setAttribute("stroke", "#1e88e5");
+      rect.setAttribute("stroke-width", "2");
+      svg.appendChild(rect);
+    }
+
+    // --- KUIS BERJENJANG ---
+    function startQuizLevel(lvl) {
+      appState.quizLevel = lvl;
+      appState.quizIndex = 0;
+      appState.quizScore = 0;
+      document.getElementById('quiz-level-tag').innerText = `Level ${lvl}: ${lvl===1?'Pemula':lvl===2?'Penjelajah':'Master'}`;
+      document.getElementById('quiz-score').innerText = appState.quizScore;
+      renderQuizQuestion();
+    }
+
+    function renderQuizQuestion() {
+      const questions = quizBank[appState.quizLevel];
+      const qBox = document.getElementById('quiz-content');
+      document.getElementById('quiz-feedback').classList.add('hidden');
+      document.getElementById('btn-next-quiz').classList.add('hidden');
+
+      if(appState.quizIndex >= questions.length) {
+        qBox.innerHTML = `
+          <div style="text-align: center; padding: 20px;">
+            <h3>🏆 Selamat! Kuis Level ${appState.quizLevel} Selesai.</h3>
+            <p style="font-size: 1.2rem; margin: 10px 0;">Skor Perolehan: <strong>${appState.quizScore} / ${questions.length * 10}</strong></p>
+          </div>
+        `;
+        return;
+      }
+
+      const q = questions[appState.quizIndex];
+      let optsHTML = "";
+      q.opts.forEach((opt, idx) => {
+        optsHTML += `<button class="quiz-option" onclick="checkQuizAnswer(${idx})">${String.fromCharCode(65+idx)}. ${opt}</button>`;
+      });
+
+      qBox.innerHTML = `
+        <p style="font-size: 1.1rem; font-weight: bold; margin-bottom: 12px;">Soal ${appState.quizIndex + 1}: ${q.q}</p>
+        <div>${optsHTML}</div>
+      `;
+    }
+
+    function checkQuizAnswer(selectedIdx) {
+      document.querySelectorAll('.quiz-option').forEach(b => b.onclick = null);
+      const q = quizBank[appState.quizLevel][appState.quizIndex];
+      const fb = document.getElementById('quiz-feedback');
+      fb.classList.remove('hidden');
+
+      let stepsHTML = q.steps.map(s => `<li>${s}</li>`).join("");
+
+      if(selectedIdx === q.ans) {
+        appState.quizScore += 10;
+        document.getElementById('quiz-score').innerText = appState.quizScore;
+        fb.className = "step-box";
+        fb.innerHTML = `
+          <strong style="color: var(--correct-green);">✅ JAWABAN BENAR! (+10 Poin)</strong>
+          <p style="margin-top: 5px;"><strong>Langkah Pembahasan:</strong></p>
+          <ul style="margin-left: 20px; font-size: 0.9rem;">${stepsHTML}</ul>
+        `;
+      } else {
+        fb.className = "step-box";
+        fb.style.borderLeftColor = "var(--wrong-red)";
+        fb.innerHTML = `
+          <strong style="color: var(--wrong-red);">❌ KURANG TEPAT.</strong>
+          <p style="margin-top: 5px;"><strong>Langkah Pembahasan Lengkap:</strong></p>
+          <ul style="margin-left: 20px; font-size: 0.9rem;">${stepsHTML}</ul>
+        `;
+      }
+
+      document.getElementById('btn-next-quiz').classList.remove('hidden');
+    }
+
+    function nextQuizQuestion() {
+      appState.quizIndex++;
+      renderQuizQuestion();
+    }
+
+    // --- LEMBAR PENGAMATAN ---
+    function saveObservation() {
+      const shape = document.getElementById('obs-shape').value.trim();
+      const pattern = document.getElementById('obs-pattern').value.trim();
+      const ref = document.getElementById('obs-reflection').value.trim();
+
+      if(!shape || !pattern) {
+        alert("Harap lengkapi nama bangun dan pola pengamatan!");
+        return;
+      }
+
+      appState.observations.push({
+        date: new Date().toLocaleDateString('id-ID'),
+        shape, pattern, ref
+      });
+
+      alert("Lembar pengamatan berhasil disimpan!");
+      renderObsList();
+    }
+
+    function renderObsList() {
+      const box = document.getElementById('saved-obs-list');
+      if(appState.observations.length === 0) {
+        box.innerHTML = "";
+        return;
+      }
+
+      let html = `<h4>Catatan Pengamatan Tersimpan:</h4>`;
+      appState.observations.forEach((o, idx) => {
+        html += `
+          <div style="background: #f5f5f5; border: 1px solid #ccc; padding: 10px; border-radius: 6px; margin-top: 8px;">
+            <p><strong>#${idx+1} [${o.date}] - ${o.shape}</strong></p>
+            <p style="font-size: 0.9rem;">Pola: ${o.pattern}</p>
+          </div>
+        `;
+      });
+      box.innerHTML = html;
+    }
+
+    function exportCSV() {
+      let csv = "Tanggal,Bangun,Pola Ditemukan,Refleksi\n";
+      appState.observations.forEach(o => {
+        csv += `"${o.date}","${o.shape}","${o.pattern}","${o.ref}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `pengamatan_matematika.csv`);
+      a.click();
+    }
+
+    function saveSchoolName() {
+      const name = document.getElementById('cfg-school').value;
+      document.getElementById('school-tag').innerText = name;
+      alert("Nama sekolah disimpan!");
+    }
+  </script>
+</body>
+</html>
